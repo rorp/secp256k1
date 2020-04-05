@@ -439,15 +439,15 @@ SECP256K1_API jint JNICALL Java_org_bitcoin_NativeSecp256k1_secp256k1_1ecdsa_1ad
   (JNIEnv *env, jclass classObject, jobject byteBufferObject, jlong ctx_l)
 {
   secp256k1_context *ctx = (secp256k1_context*)(uintptr_t)ctx_l;
-  unsigned char* data = (unsigned char*) (*env)->GetDirectBufferAddress(env, byteBufferObject);
-  unsigned char* adaptor_sig65 = (unsigned char*) (data + 32);
-  unsigned char* adaptor_proof129 = (unsigned char*) (adaptor_sig65 + 65);
-  secp256k1_pubkey* adaptor64 = (secp256k1_pubkey*) (adaptor_proof129 + 129);
-  secp256k1_pubkey* pubkey = (secp256k1_pubkey*) (adaptor64 + 64);
+  unsigned char* msg32 = (unsigned char*) (*env)->GetDirectBufferAddress(env, byteBufferObject);
+  unsigned char* adaptor_sig65 = (unsigned char*) (msg32 + 32);
+  unsigned char* adaptor_proof97 = (unsigned char*) (adaptor_sig65 + 65);
+  secp256k1_pubkey* adaptor64 = (secp256k1_pubkey*) (adaptor_proof97 + 97);
+  secp256k1_pubkey* pubkey64 = (secp256k1_pubkey*) (adaptor64->data + 64);
 
   (void)classObject;
 
-  return secp256k1_ecdsa_adaptor_sig_verify(ctx, adaptor_sig65, pubkey, data, adaptor64, adaptor_proof129);
+  return secp256k1_ecdsa_adaptor_sig_verify(ctx, adaptor_sig65, pubkey64, msg32, adaptor64, adaptor_proof97);
 }
 
 /*

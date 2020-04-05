@@ -508,10 +508,7 @@ public class NativeSecp256k1 {
         }
 
         byte[] sigArr = retByteArray[0];
-        int sigLen = new BigInteger(new byte[] { retByteArray[1][0] }).intValue();
-        int retVal = new BigInteger(new byte[] { retByteArray[1][1] }).intValue();
-
-        assertEquals(sigArr.length, sigLen, "Got bad adaptor signature length.");
+        int retVal = new BigInteger(new byte[] { retByteArray[1][0] }).intValue();
 
         return retVal == 0 ? new byte[0] : sigArr;
     }

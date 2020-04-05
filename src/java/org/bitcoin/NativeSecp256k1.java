@@ -453,18 +453,20 @@ public class NativeSecp256k1 {
         }
     }
 
-    public static byte[][] adaptorSign(byte[] data, byte[] adaptorPoint) throws AssertFailException{
+    public static byte[][] adaptorSign(byte[] data, byte[] adaptorPoint, byte[] seckey) throws AssertFailException{
         Preconditions.checkArgument(data.length == 32 &&
+                seckey.length == 32 &&
                 adaptorPoint.length <= 64);
 
         ByteBuffer byteBuff = nativeECDSABuffer.get();
-        if (byteBuff == null || byteBuff.capacity() < 32 + 64) {
-            byteBuff = ByteBuffer.allocateDirect(32 + 64);
+        if (byteBuff == null || byteBuff.capacity() < 32 + 32 + 64) {
+            byteBuff = ByteBuffer.allocateDirect(32 + 32 + 64);
             byteBuff.order(ByteOrder.nativeOrder());
             nativeECDSABuffer.set(byteBuff);
         }
         byteBuff.rewind();
         byteBuff.put(data);
+        byteBuff.put(seckey);
         byteBuff.put(adaptorPoint);
 
         byte[][] retByteArray;
@@ -476,12 +478,11 @@ public class NativeSecp256k1 {
             r.unlock();
         }
 
-        byte[] secArr = retByteArray[0];
-        byte[] sigArr = retByteArray[1];
-        byte[] proofArr = retByteArray[2];
-        int retVal = new BigInteger(new byte[] { retByteArray[3][0] }).intValue();
+        byte[] sigArr = retByteArray[0];
+        byte[] proofArr = retByteArray[1];
+        int retVal = new BigInteger(new byte[] { retByteArray[2][0] }).intValue();
 
-        return retVal == 0 ? new byte[][]{} : new byte[][] {secArr, sigArr, proofArr};
+        return retVal == 0 ? new byte[][]{} : new byte[][] {sigArr, proofArr};
     }
 
     public static byte[] adaptorAdapt(byte[] adaptorSec, byte[] adaptorSig) throws AssertFailException{
